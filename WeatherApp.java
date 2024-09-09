@@ -13,6 +13,13 @@ public class WeatherApp
     public static JSONObject getWeatherData(String locationName)
     {
         JSONArray locationData = getLocationData(locationName);
+
+        //store very the first location within the JSON structure given via getLocationData which is located at index 0
+        JSONObject location = (JSONObject)  locationData.get(0);
+        //put latitude data from location object into variable
+        double latitude = (double) location.get("latitude");
+        //put longitude data from location object into variable
+        double longitude = (double) location.get("longitude");
         return null;
     }
 
@@ -61,7 +68,7 @@ public class WeatherApp
                 //now we can put our API response into a JSON ARRAY object called locationData
                 //results in this situation is the key and the array of data(locationData) the API gives us is the value
                 JSONArray locationData = (JSONArray) resultJsonObj.get("results");
-                //give locationData back to the caller
+                //give locationData back to the caller so other functions(getWeatherData in this situation) can use it
                 return locationData;
             }
 
