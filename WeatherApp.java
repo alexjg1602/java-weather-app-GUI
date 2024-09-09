@@ -20,6 +20,56 @@ public class WeatherApp
         double latitude = (double) location.get("latitude");
         //put longitude data from location object into variable
         double longitude = (double) location.get("longitude");
+
+        //the api that will be called
+        String urlString = "https://api.open-meteo.com/v1/forecast?" +
+                "latitude=" + latitude + "& longitude="+ longitude +
+                "&hourly=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&timezone=America%2FNew_York";
+
+        try
+        {
+            //store the response from urlString into the conn object via fetchApiResponse
+            HttpURLConnection conn = fetchApiResponse(urlString);
+
+            if(conn.getResponseCode() != 200)
+            {
+                System.out.println("Error: Could not connect to the API.");
+                return null;
+            }
+
+            //build an empty string to store the JSON into
+            StringBuilder resultJson = new StringBuilder();
+            //build scanner to scan conn via getInputStream
+            Scanner scanner = new Scanner(conn.getInputStream());
+            //if the scanner reads input from conn.getInputStream...
+            while (scanner.hasNext()){
+                //put it in resultJson that was built earlier
+                resultJson.append(scanner.nextLine());
+            }
+
+            //close scanner object
+            scanner.close();
+
+            //disconnect input stream
+            conn.disconnect();
+
+            /*The JSONParser object is responsible for taking the raw JSON string (which is stored in resultJson)
+                and converting it into a Java object that can be worked with.*/
+            JSONParser parser = new JSONParser();
+            //create resultJsonObj and transfer the data from resultJson and put it into the object called resultJsonObj
+            JSONObject resultJsonObj = (JSONObject) parser.parse(String.valueOf(resultJson));
+
+
+
+
+
+
+
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
         return null;
     }
 
