@@ -5,6 +5,8 @@ import org.json.simple.parser.JSONParser;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 public class WeatherApp
@@ -12,16 +14,17 @@ public class WeatherApp
 
     public static JSONObject getWeatherData(String locationName)
     {
+        //store location data from getLocationData in locationData object
         JSONArray locationData = getLocationData(locationName);
 
-        //store very the first location within the JSON structure given via getLocationData which is located at index 0
+        //store the very first city within the JSON structure given via getLocationData which is located at index 0
         JSONObject location = (JSONObject)  locationData.get(0);
         //put latitude data from location object into variable
         double latitude = (double) location.get("latitude");
         //put longitude data from location object into variable
         double longitude = (double) location.get("longitude");
 
-        //the api that will be called
+        //the api that will be called for weather data using geolocation data retrieved via getLocationData
         String urlString = "https://api.open-meteo.com/v1/forecast?" +
                 "latitude=" + latitude + "& longitude="+ longitude +
                 "&hourly=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&timezone=America%2FNew_York";
@@ -59,6 +62,19 @@ public class WeatherApp
             //create resultJsonObj and transfer the data from resultJson and put it into the object called resultJsonObj
             JSONObject resultJsonObj = (JSONObject) parser.parse(String.valueOf(resultJson));
 
+            //explicitly get hourly weather data in the JSON structure and store it in hourly object
+            JSONObject hourly = (JSONObject) resultJsonObj.get("hourly");
+
+            JSONArray time = (JSONArray) hourly.get("time");
+
+            int index = findIndexOfCurrentTime(time);
+
+
+
+
+
+
+
 
 
 
@@ -80,7 +96,7 @@ public class WeatherApp
         //replace spaces in locationName argument with pluses to fit formating
         locationName = locationName.replaceAll(" ","+");
 
-        //the API url that will be called
+        //the API url that will be called geolocation data
         String urlString = "https://geocoding-api.open-meteo.com/v1/search?name=" +
                 locationName + "&count=10&language=en&format=json";
 
@@ -153,4 +169,25 @@ public class WeatherApp
 
         return null;
     }
+
+
+    private static int findIndexOfCurrentTime(JSONArray timeList)
+    {
+        String currentTime = getCurrentTime();
+
+        return 0;
+    }
+
+    public static String getCurrentTime()
+    {
+        //store current date and time in currentDateTime
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        //format currentDateTime to liking
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        //give currentDateTime back to caller
+        return currentDateTime.format(formatter);
+    }
 }
+
+
+

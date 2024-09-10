@@ -13,7 +13,9 @@ public class AppLauncher
             //Open GUI window
             //new WeatherAppGui().setVisible(true);
 
-            System.out.println(WeatherApp.getLocationData("Las Vegas"));
+            //System.out.println(WeatherApp.getLocationData("Las Vegas"));
+
+            //System.out.println(WeatherApp.getCurrentTime());
         }
     });
     }
