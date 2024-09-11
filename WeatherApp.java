@@ -69,18 +69,6 @@ public class WeatherApp
 
             int index = findIndexOfCurrentTime(time);
 
-
-
-
-
-
-
-
-
-
-
-
-
         }
         catch (Exception e)
         {
@@ -147,6 +135,7 @@ public class WeatherApp
 
 
 
+
     private static HttpURLConnection fetchApiResponse(String urlString)
     {
         try {
@@ -173,7 +162,20 @@ public class WeatherApp
 
     private static int findIndexOfCurrentTime(JSONArray timeList)
     {
+        //sore the current time in currentTime object
         String currentTime = getCurrentTime();
+        //as long as i is smaller than time List...
+        for(int i = 0; i < timeList.size(); i++)
+        {
+            //create a time string and grab the time strings index(i)
+            String time = (String) timeList.get(i);
+            //if the time-string and timeString are identical regardless of casing...
+            if(time.equalsIgnoreCase(currentTime))
+            {
+                //return the index timeList to the caller
+                return i;
+            }
+        }
 
         return 0;
     }
@@ -183,7 +185,7 @@ public class WeatherApp
         //store current date and time in currentDateTime
         LocalDateTime currentDateTime = LocalDateTime.now();
         //format currentDateTime to liking
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH':00'");
         //give currentDateTime back to caller
         return currentDateTime.format(formatter);
     }
