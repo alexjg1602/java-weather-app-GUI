@@ -51,20 +51,6 @@ public class WeatherAppGui extends JFrame
         //adds searchbar to JFrame
         add(searchTextField);
 
-        /*search button object component creation from JButton class which is inherited from swing and object creation
-        will invoke loadImage which will load search.png*/
-        JButton searchButton = new JButton(loadImage("src/assets/search.png"));
-
-        //hand cursor will appear when hovering over search button
-        searchButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        //button object component dimensions and coordinates
-        searchButton.setBounds(375, 13, 47, 45);
-
-        /*this is what calling addGuiComponents() calls... add() is inherited from one of JFrames parent classes
-        (container). add() will add object components such as button and text fields to a JFrame object content pane */
-        //adds search button to JFrame
-        add(searchButton);
-
         /*cloudy image object component creation from JLabel class which is inherited from swing and object creation
         will invoke loadImage which will load cloudy.png*/
         //cloudy icon
@@ -108,6 +94,20 @@ public class WeatherAppGui extends JFrame
         windspeedText.setBounds(310, 500, 85, 55);
         windspeedText.setFont(new Font("Dialog", Font.PLAIN, 16));
         add(windspeedText);
+
+        /*search button object component creation from JButton class which is inherited from swing and object creation
+        will invoke loadImage which will load search.png*/
+        JButton searchButton = new JButton(loadImage("src/assets/search.png"));
+
+        //hand cursor will appear when hovering over search button
+        searchButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        //button object component dimensions and coordinates
+        searchButton.setBounds(375, 13, 47, 45);
+
+        /*this is what calling addGuiComponents() calls... add() is inherited from one of JFrames parent classes
+        (container). add() will add object components such as button and text fields to a JFrame object content pane */
+        //adds search button to JFrame
+        add(searchButton);
     }
 
 

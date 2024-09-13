@@ -1,3 +1,4 @@
+import netscape.javascript.JSObject;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -12,6 +13,7 @@ import java.util.Scanner;
 public class WeatherApp
 {
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public static JSONObject getWeatherData(String locationName)
     {
         //store location data from getLocationData in locationData object
@@ -62,13 +64,37 @@ public class WeatherApp
             //create resultJsonObj and transfer the data from resultJson and put it into the object called resultJsonObj
             JSONObject resultJsonObj = (JSONObject) parser.parse(String.valueOf(resultJson));
 
-            //explicitly get hourly weather data in the JSON structure and store it in hourly object
+            //explicitly get hourly data in the JSON structure and store it in hourly object
             JSONObject hourly = (JSONObject) resultJsonObj.get("hourly");
-
+            //get time data from  and put it into time object
             JSONArray time = (JSONArray) hourly.get("time");
-
+            //store the particular index of current time in index
             int index = findIndexOfCurrentTime(time);
+            //put the hourly temperature data in the temperatureData JSONArray
+            JSONArray temperatureData = (JSONArray) hourly.get("temperature_2m");
+            //put the index of temperatureData into temperature
+            double temperature = (double) temperatureData.get(index);
+            //grab the weathercode from the hourly json object and put it into weathercode array
+            JSONArray weathercode = (JSONArray) hourly.get("weather_code");
+            //store the index of weathercode into weatherCondition string but easier to read via convertWeatherCode
+            String weatherCondition = convertWeatherCode((long) weathercode.get(index));
+            //put humidity data from hourly array into another array called relativeHumidity
+            JSONArray relativeHumidity = (JSONArray) hourly.get("relativehumidity_2m");
+            //put index of relativeHumidity into humidity
+            long humidity = (long) relativeHumidity.get(index);
+            //put windspeed data from hourly data in windSpeedData array
+            JSONArray windSpeedData = (JSONArray) hourly.get("windspeed_10m");
+            //put the index of windSpeedData into windSpeed
+            double windSpeed = (double) windSpeedData.get(index);
 
+            //
+            JSONObject weatherData = new JSONObject();
+            weatherData.put("temperature", temperature);
+            weatherData.put("weather_condition", weatherCondition);
+            weatherData.put("humidity", humidity);
+            weatherData.put("windspeed", windSpeed);
+
+            return weatherData;
         }
         catch (Exception e)
         {
@@ -78,6 +104,7 @@ public class WeatherApp
     }
 
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //getLocationData will give locationData in the form of a JSONArray by passing locationName when invoking getLocationData
     public static JSONArray getLocationData(String locationName)
     {
@@ -136,6 +163,8 @@ public class WeatherApp
 
 
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // only used in getWeatherData to call Weather Forecast API and getLocationData to call Geolocation API
     private static HttpURLConnection fetchApiResponse(String urlString)
     {
         try {
@@ -162,17 +191,18 @@ public class WeatherApp
 
     private static int findIndexOfCurrentTime(JSONArray timeList)
     {
-        //sore the current time in currentTime object
+        //sore the current time in currentTime object via getCurrentTime method
         String currentTime = getCurrentTime();
         //as long as i is smaller than time List...
         for(int i = 0; i < timeList.size(); i++)
         {
             //create a time string and grab the time strings index(i)
             String time = (String) timeList.get(i);
-            //if the time-string and timeString are identical regardless of casing...
+            //compare currentDateTime object from getCurrentTime method
+            //if the currentDateTime and time string are identical regardless of casing...
             if(time.equalsIgnoreCase(currentTime))
             {
-                //return the index timeList to the caller
+                //return the index of timeList(time JSONArray object from getWeatherData) that matches currentTime to the caller
                 return i;
             }
         }
@@ -180,14 +210,39 @@ public class WeatherApp
         return 0;
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public static String getCurrentTime()
     {
         //store current date and time in currentDateTime
         LocalDateTime currentDateTime = LocalDateTime.now();
-        //format currentDateTime to liking
+        //format currentDateTime to JSON liking
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH':00'");
         //give currentDateTime back to caller
         return currentDateTime.format(formatter);
+    }
+
+    //convert various weather codes to be more user-friendly
+    private static String convertWeatherCode(long weatherCode)
+    {
+        String weatherCondition = "";
+        if (weatherCode == 0L)
+        {
+            weatherCondition = "Clear";
+        }
+        else if (weatherCode > 0L && weatherCode <= 3L)
+        {
+            weatherCondition = "Cloudy";
+        }
+        else if ((weatherCode >= 51L && weatherCode <= 67L)
+            || (weatherCode >= 80L && weatherCode <= 99L))
+        {
+            weatherCondition = "Rain";
+        }
+        else if (weatherCode >= 71L && weatherCode <= 77L)
+        {
+            weatherCondition = "Snow";
+        }
+        return weatherCondition;
     }
 }
 
