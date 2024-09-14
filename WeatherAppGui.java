@@ -1,6 +1,10 @@
+import org.json.simple.JSONObject;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -8,6 +12,7 @@ import java.util.ResourceBundle;
 
 public class WeatherAppGui extends JFrame
 {
+    public JSONObject weatherData;
     //the WeatherAppGui constructor will be called when WeatherAppGui object is created so the object is ready for use
     public WeatherAppGui()
     {
@@ -103,7 +108,51 @@ public class WeatherAppGui extends JFrame
         searchButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         //button object component dimensions and coordinates
         searchButton.setBounds(375, 13, 47, 45);
+        //
+        searchButton.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                String userInput = searchTextField.getText();
+                //
+                if (userInput.replaceAll("\\s", "").length() <= 0) {
+                    return;
+                }
 
+                weatherData = WeatherApp.getWeatherData(userInput);
+
+                String weatherCondition = (String)weatherData.get("weather_condition");
+
+                switch (weatherCondition)
+                {
+                    case "Clear":
+                        weatherConditionImage.setIcon(new ImageIcon("src/assets/clear.png"));
+                        break;
+                    case "Cloudy":
+                        weatherConditionImage.setIcon(new ImageIcon("src/assets/cloudy.png"));
+                        break;
+                    case "Rain":
+                        weatherConditionImage.setIcon(new ImageIcon("src/assets/rain.png"));
+                        break;
+                    case "Snowr":
+                        weatherConditionImage.setIcon(new ImageIcon("src/assets/snow.png"));
+                        break;
+                }
+
+                double temperature = (Double) weatherData.get("temperature");
+                temperatureText.setText(temperature + " C");
+
+                weatherConditionDesc.setText(weatherCondition);
+
+                long humidity = (Long) weatherData.get("humidity");
+                humidityText.setText("<html><b><Humidity> "+ humidity + "%</html>");
+
+                double windspeed = (double) weatherData.get("windspeed");
+                windspeedText.setText("<html><b><windspeed> "+ windspeed + "km/h</html>");
+            }
+
+        });
         /*this is what calling addGuiComponents() calls... add() is inherited from one of JFrames parent classes
         (container). add() will add object components such as button and text fields to a JFrame object content pane */
         //adds search button to JFrame

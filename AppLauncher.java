@@ -11,7 +11,7 @@ public class AppLauncher
         public void run()
         {
             //Open GUI window
-            //new WeatherAppGui().setVisible(true);
+            new WeatherAppGui().setVisible(true);
 
             //System.out.println(WeatherApp.getLocationData("Las Vegas"));
 

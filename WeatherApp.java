@@ -28,7 +28,7 @@ public class WeatherApp
 
         //the api that will be called for weather data using geolocation data retrieved via getLocationData
         String urlString = "https://api.open-meteo.com/v1/forecast?" +
-                "latitude=" + latitude + "& longitude="+ longitude +
+                "latitude=" + latitude + "&longitude="+ longitude +
                 "&hourly=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&timezone=America%2FNew_York";
 
         try
@@ -79,11 +79,11 @@ public class WeatherApp
             //store the index of weathercode into weatherCondition string but easier to read via convertWeatherCode
             String weatherCondition = convertWeatherCode((long) weathercode.get(index));
             //put humidity data from hourly array into another array called relativeHumidity
-            JSONArray relativeHumidity = (JSONArray) hourly.get("relativehumidity_2m");
+            JSONArray relativeHumidity = (JSONArray) hourly.get("relative_humidity_2m");
             //put index of relativeHumidity into humidity
             long humidity = (long) relativeHumidity.get(index);
             //put windspeed data from hourly data in windSpeedData array
-            JSONArray windSpeedData = (JSONArray) hourly.get("windspeed_10m");
+            JSONArray windSpeedData = (JSONArray) hourly.get("wind_speed_10m");
             //put the index of windSpeedData into windSpeed
             double windSpeed = (double) windSpeedData.get(index);
 
