@@ -13,7 +13,7 @@ import java.util.ResourceBundle;
 public class WeatherAppGui extends JFrame
 {
     public JSONObject weatherData;
-    //the WeatherAppGui constructor will be called when WeatherAppGui object is created so the object is ready for use
+    //the WeatherAppGui constructor will be called when WeatherAppGui object is created in AppLauncher so the object is ready for use
     public WeatherAppGui()
     {
         //object GUI and title
@@ -109,21 +109,32 @@ public class WeatherAppGui extends JFrame
         //button object component dimensions and coordinates
         searchButton.setBounds(375, 13, 47, 45);
         //
+
+
+
         searchButton.addActionListener(new ActionListener()
         {
+            //actionPerformed invoked when searchButton is clicked
             @Override
             public void actionPerformed(ActionEvent e)
             {
+                //gather the input from searchTextField object and put it into userInput
                 String userInput = searchTextField.getText();
-                //
+                //if userInput contains more than 1 space b2b, replace it with one space
+                //if userInput is empty, return
                 if (userInput.replaceAll("\\s", "").length() <= 0) {
                     return;
                 }
 
+                //now lets store getWeatherData invocation from the backend logic into weatherData
+                //also userInput will be the getWeatherData arg/param
                 weatherData = WeatherApp.getWeatherData(userInput);
 
+                /*grab weather_condition key from weatherData JSONObject which
+                 was crated via getWeatherData in backend logic*/
                 String weatherCondition = (String)weatherData.get("weather_condition");
 
+                //display appropriate data depending on what weatherCondition value contains
                 switch (weatherCondition)
                 {
                     case "Clear":
@@ -140,16 +151,31 @@ public class WeatherAppGui extends JFrame
                         break;
                 }
 
+                //CELSIUS
+                //display appropriate data depending on what temperature value contains
+                //double temperature = (Double) weatherData.get("temperature");
+                //temperatureText.setText(temperature + " C");
+
+                //FAHRENHEIT
+                //display appropriate data depending on what temperature value contains
                 double temperature = (Double) weatherData.get("temperature");
-                temperatureText.setText(temperature + " C");
+                temperatureText.setText(temperature + " F");
 
                 weatherConditionDesc.setText(weatherCondition);
 
+                //display appropriate data depending on what humidity value contains
                 long humidity = (Long) weatherData.get("humidity");
                 humidityText.setText("<html><b><Humidity> "+ humidity + "%</html>");
 
+                //KMP/H
+                //display appropriate data depending on what windspeed value contains
+                //double windspeed = (double) weatherData.get("windspeed");
+                //windspeedText.setText("<html><b><windspeed> "+ windspeed + "km/h</html>");
+
+                //MP/H
+                //display appropriate data depending on what windspeed value contains
                 double windspeed = (double) weatherData.get("windspeed");
-                windspeedText.setText("<html><b><windspeed> "+ windspeed + "km/h</html>");
+                windspeedText.setText("<html><b><windspeed> "+ windspeed + " MP/H</html>");
             }
 
         });

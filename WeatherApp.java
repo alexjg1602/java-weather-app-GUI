@@ -21,15 +21,23 @@ public class WeatherApp
 
         //store the very first city within the JSON structure given via getLocationData which is located at index 0
         JSONObject location = (JSONObject)  locationData.get(0);
-        //put latitude data from location object into variable
+        //put latitude data from location object into variable for use in urlString
         double latitude = (double) location.get("latitude");
-        //put longitude data from location object into variable
+        //put longitude data from location object into variable for use in urlString
         double longitude = (double) location.get("longitude");
 
+        //CELSIUS AND KMP/H
+        //the api that will be called for weather data using geolocation data retrieved via getLocationData
+        //String urlString = "https://api.open-meteo.com/v1/forecast?" +
+          //     "latitude=" + latitude + "&longitude="+ longitude +
+            //   "&hourly=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&timezone=America%2FNew_York";
+
+        //FAHRENHEIT AND MP/H
         //the api that will be called for weather data using geolocation data retrieved via getLocationData
         String urlString = "https://api.open-meteo.com/v1/forecast?" +
                 "latitude=" + latitude + "&longitude="+ longitude +
-                "&hourly=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&timezone=America%2FNew_York";
+                "&hourly=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America%2FNew_York";
+
 
         try
         {
@@ -64,36 +72,54 @@ public class WeatherApp
             //create resultJsonObj and transfer the data from resultJson and put it into the object called resultJsonObj
             JSONObject resultJsonObj = (JSONObject) parser.parse(String.valueOf(resultJson));
 
-            //explicitly get hourly data in the JSON structure and store it in hourly object
+            //get the hourly key from resultJsonObj and put it into hourly object
             JSONObject hourly = (JSONObject) resultJsonObj.get("hourly");
-            //get time data from  and put it into time object
+            //get the time key from the hourly key and put it into the time JSONArray
+            //time data should now be identical to this... "hourly": {
+            //    "time": [
+            //"hourly" is an object with complex values (keys). "time" is one of the keys, making timestamps the value of "time"
             JSONArray time = (JSONArray) hourly.get("time");
-            //store the particular index of current time in index
+            //the value of the JSONArray time are the timestamps themselves, so JSONArray time is full of timestamps
+            //findIndexOfCurrentTime will sort through the timestamps and return the one that matches the currentDateTime
+            //currentDateTime returns from getCurrentTime, which is used in findIndexOfCurrentTime
+            //i(returned) from findIndexOfCurrentTime is in int index
             int index = findIndexOfCurrentTime(time);
-            //put the hourly temperature data in the temperatureData JSONArray
+            //temperature_2m is also a complex value of hourly, making it a key and the temps themselves the value
             JSONArray temperatureData = (JSONArray) hourly.get("temperature_2m");
-            //put the index of temperatureData into temperature
+            /*grab the index of the current temperatureData that matches
+             the index from findIndexOfCurrentTime and cast it into a double called temperature*/
             double temperature = (double) temperatureData.get(index);
-            //grab the weathercode from the hourly json object and put it into weathercode array
+            //weather_code is also a complex value of hourly, making it a key and the weather-codes themselves the value
             JSONArray weathercode = (JSONArray) hourly.get("weather_code");
-            //store the index of weathercode into weatherCondition string but easier to read via convertWeatherCode
+            /*grab the index of the current weathercode that matches
+             the index from findIndexOfCurrentTime and cast it into a
+             long called weatherCondition then store into String weatherCondition*/
             String weatherCondition = convertWeatherCode((long) weathercode.get(index));
-            //put humidity data from hourly array into another array called relativeHumidity
+            //relative_humidity_2m is also a complex value of hourly, making it a key and the humidity percentages themselves the value
             JSONArray relativeHumidity = (JSONArray) hourly.get("relative_humidity_2m");
-            //put index of relativeHumidity into humidity
+            /*grab the index of the current relativeHumidity that matches
+             the index from findIndexOfCurrentTime and cast it into a long called humidity*/
             long humidity = (long) relativeHumidity.get(index);
-            //put windspeed data from hourly data in windSpeedData array
+            //wind_speed_10m is also a complex value of hourly, making it a key and the wind speeds themselves the value
             JSONArray windSpeedData = (JSONArray) hourly.get("wind_speed_10m");
-            //put the index of windSpeedData into windSpeed
+             /*grab the index of the current windSpeedData that matches
+             the index from findIndexOfCurrentTime and cast it into a double called windSpeed*/
             double windSpeed = (double) windSpeedData.get(index);
 
-            //
+            //create new weatherData object that will connect to frontend
+            //the frontend will access the values via the keys
             JSONObject weatherData = new JSONObject();
+            //tie "temperature" key to value temperature
             weatherData.put("temperature", temperature);
+            //tie "weather_condition" key to value weatherCondition
             weatherData.put("weather_condition", weatherCondition);
+            //tie "humidity" key to value humidity
             weatherData.put("humidity", humidity);
+            //tie "windspeed" key to value windSpeed
             weatherData.put("windspeed", windSpeed);
 
+
+            //return weatherData object to caller
             return weatherData;
         }
         catch (Exception e)
@@ -147,7 +173,6 @@ public class WeatherApp
                 //create resultJsonObj and transfer the data from resultJson and put it into the object called resultJsonObj
                 JSONObject resultJsonObj = (JSONObject) parser.parse(String.valueOf(resultJson));
                 //now we can put our API response into a JSON ARRAY object called locationData
-                //results in this situation is the key and the array of data(locationData) the API gives us is the value
                 JSONArray locationData = (JSONArray) resultJsonObj.get("results");
                 //give locationData back to the caller so other functions(getWeatherData in this situation) can use it
                 return locationData;
@@ -193,16 +218,15 @@ public class WeatherApp
     {
         //sore the current time in currentTime object via getCurrentTime method
         String currentTime = getCurrentTime();
-        //as long as i is smaller than time List...
+        //loop through the arg/param as long as i is smaller than the arg/param...
         for(int i = 0; i < timeList.size(); i++)
         {
-            //create a time string and grab the time strings index(i)
+            //Store each index of the arg/param into time
             String time = (String) timeList.get(i);
-            //compare currentDateTime object from getCurrentTime method
-            //if the currentDateTime and time string are identical regardless of casing...
+            //if one of the times in the arg/param = currentTime via getCurrentTime...
             if(time.equalsIgnoreCase(currentTime))
             {
-                //return the index of timeList(time JSONArray object from getWeatherData) that matches currentTime to the caller
+                //return that 1 particular matching index to the caller
                 return i;
             }
         }
